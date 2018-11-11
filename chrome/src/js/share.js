@@ -188,11 +188,20 @@ class Share extends Downloader {
   }
   getPrefixLength () {
     const path = Core.getHashParameter('list/path') || Core.getHashParameter('path') || ''
+    const fold = Core.getConfigData('fold')
     // solution for example :链接:http://pan.baidu.com/s/1hqOIdUk 密码:qat2
     if (path !== window.yunData.PATH) {
       return window.yunData.PATH.slice(0, window.yunData.PATH.lastIndexOf('/')).length + 1
+    } else if (fold === -1) {
+      const parentPath = Core.getHashParameter('parentPath')
+      return path.length > parentPath.length ? parentPath.length + 1 : 1
     } else {
-      return path.length === 1 ? 1 : path.length + 1
+      const dir = path.split('/')
+      let count = 0
+      for (let i = 0; i < dir.length - fold; i++) {
+        count = count + dir[i].length + 1
+      }
+      return count
     }
   }
   getFiles (files, captcha) {
